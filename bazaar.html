@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="cat">
+            <button onclick="harsfilter('ALL')">ALL</button>
+        </div>
+        <div class="cater"></div>
+    </div>
+
+    <script>
+        let practicalData = []; 
+        let allProducts = []; 
+
+        
+        fetch('https://dummyjson.com/products')
+            .then(res => res.json())
+            .then(data => {
+                practicalData = data.products;
+                allProducts = data.products; 
+                showdata(practicalData);
+                ourcategory(data.products);
+            })
+            .catch(error => {
+                console.log("Error fetching product data:", error);
+            });
+
+        
+        const showdata = (products) => {
+            const caterContainer = document.querySelector(".cater");
+            caterContainer.innerHTML = ''; 
+            products.forEach((product) => {
+                const updatedElement = {
+                    id: product.id,
+                    title: product.title.replaceAll("'", "^^"),
+                    thumbnail: product.thumbnail.replaceAll("'", "^^"),
+                    price: product.price,
+                    description: product.description.replaceAll("'", "^^"),
+                    quantity: 1,
+                };
+                caterContainer.innerHTML += `
+                    <div class="crd">
+                        <img src="${product.thumbnail}" alt="">
+                        <div class="crdtext">
+                            <h2>${product.title}</h2>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star-half-stroke" aria-hidden="true"></i><br>
+                            <button id="buttonn" productData='${JSON.stringify(updatedElement)}' onclick="myFunction(this)">
+                                Add to cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        
+        const ourcategory = (products) => {
+            const categories = [...new Set(products.map(product => product.category))]; 
+            const catContainer = document.querySelector(".cat");
+            catContainer.innerHTML = `<button onclick="harsfilter('ALL')">ALL</button>`; 
+            categories.forEach(category => {
+                catContainer.innerHTML += `
+                    <button onclick="harsfilter('${category}')">${category}</button>
+                `;
+            });
+        };
+
+        
+        const harsfilter = (category) => {
+            if (category === 'ALL') {
+                practicalData = allProducts;
+            } else {
+                practicalData = allProducts.filter(product => product.category === category);
+            }
+            showdata(practicalData); 
+        };
+    </script>
+</body>
+
+</html>
